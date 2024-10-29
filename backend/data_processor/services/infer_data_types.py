@@ -13,7 +13,7 @@ def is_date(string):
         return False
 
 def is_numeric_with_na(series):
-    na_values = ['Not Available', 'NA', 'N/A', 'not available', 'n/a', '', ' ']
+    na_values = ['Not Available', 'NA', 'N/A', 'not available', 'n/a', '', ' ', '-']
     temp_series = series.copy()
     
     temp_series = temp_series.astype(str)
