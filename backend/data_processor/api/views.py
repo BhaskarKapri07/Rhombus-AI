@@ -1,3 +1,14 @@
+"""
+API views for data processing application.
+
+This module provides API endpoints for:
+1. File upload and data type inference
+2. Data type updates and conversions
+
+The views handle CSV and Excel file processing using pandas and provide
+JSON responses with inferred types and data previews.
+"""
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,7 +18,27 @@ from ..services.infer_data_types import infer_and_convert_data_types
 import os
 
 class ProcessFileView(APIView):
+    """
+    API view for handling file uploads and initial data processing.
+    
+    Accepts CSV and Excel files, processes them using pandas, and returns
+    inferred data types along with a preview of the processed data.
+    """
+
     def post(self, request):
+        """
+        Handle file upload and perform initial data type inference.
+
+        Args:
+            request: HTTP request containing the file in request.FILES
+
+        Returns:
+            Response: JSON response containing inferred types and data preview
+            
+        Raises:
+            400: If no file is uploaded or file type is unsupported
+            500: For processing errors
+        """
         file_obj = request.FILES.get('file')
         if not file_obj:
             return Response(
@@ -64,8 +95,23 @@ class ProcessFileView(APIView):
             )
         
 class UpdateTypesView(APIView):
+    """
+    API view for handling data type updates.
+    
+    Allows changing data types of columns and returns the updated data
+    with new type conversions applied.
+    """
+
     def serialize_value(self, val):
-        """Serialize values to JSON-compatible format."""
+        """
+        Serialize values to JSON-compatible format.
+
+        Args:
+            val: Value to serialize
+
+        Returns:
+            JSON-compatible value
+        """
         if pd.isna(val) or pd.isnull(val):
             return None
         if isinstance(val, (pd.Timestamp, np.datetime64)):
@@ -79,6 +125,19 @@ class UpdateTypesView(APIView):
         return str(val)
 
     def post(self, request):
+        """
+        Handle data type update requests.
+
+        Args:
+            request: HTTP request containing column_types and preview_data
+
+        Returns:
+            Response: JSON response containing updated types and data preview
+            
+        Raises:
+            400: If required data is missing or type conversion fails
+            500: For processing errors
+        """
         try:
             data = request.data
             file_data = data.get('preview_data', [])
