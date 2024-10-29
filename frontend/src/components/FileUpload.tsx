@@ -1,3 +1,12 @@
+/**
+ * FileUpload Component
+ * 
+ * A component that handles file upload, data type inference, and type override functionality.
+ * Supports CSV and Excel files, displays inferred types, and allows users to modify data types.
+ * 
+ * @module Components
+ */
+
 import { useState } from 'react';
 import { 
   Group, 
@@ -16,6 +25,10 @@ import { IconUpload, IconX, IconFileAnalytics } from '@tabler/icons-react';
 import { uploadFile, updateTypes } from '../services/api';
 import { ColumnType } from '../types';
 
+
+/**
+ * Available data types for column type conversion
+ */
 const DATA_TYPES = [
   { value: 'Int64', label: 'Integer' },
   { value: 'float64', label: 'Decimal' },
@@ -34,6 +47,12 @@ const FileUpload = () => {
   const [columnTypes, setColumnTypes] = useState<{[key: string]: string}>({});
   const [hasChanges, setHasChanges] = useState(false);
 
+
+   /**
+   * Handles file upload and processes the file for data type inference
+   * 
+   * @param files - Array of files from the dropzone
+   */
   const handleFileUpload = async (files: File[]) => {
     const file = files[0];
     if (!file) return;
@@ -57,6 +76,12 @@ const FileUpload = () => {
     }
   };
 
+  /**
+   * Handles data type changes for columns
+   * 
+   * @param column - Column name
+   * @param newType - New data type to apply
+   */
   const handleTypeChange = (column: string, newType: string) => {
     setColumnTypes(prev => ({
       ...prev,
@@ -65,6 +90,10 @@ const FileUpload = () => {
     setHasChanges(true);
   };
 
+
+  /**
+   * Applies the type changes to the data
+   */
   const handleApplyChanges = async () => {
     if (!data) return;
 
@@ -86,6 +115,13 @@ const FileUpload = () => {
     }
   };
 
+
+  /**
+   * Gets user-friendly label for data type
+   * 
+   * @param type - Data type value
+   * @returns User-friendly label for the data type
+   */
   const getTypeLabel = (type: string) => {
     return DATA_TYPES.find(t => t.value === type)?.label || type;
   };
